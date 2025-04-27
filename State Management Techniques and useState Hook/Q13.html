@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shopping List App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding-top: 50px;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .shopping-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 8px;
+      margin: 5px;
+      width: 80%;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      background-color: #f9f9f9;
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .item button {
+      background-color: #dc3545;
+    }
+
+    .item button:hover {
+      background-color: #b52a37;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+
+    function ShoppingList() {
+      const [items, setItems] = React.useState([]);
+      const [name, setName] = React.useState('');
+      const [quantity, setQuantity] = React.useState(1);
+      const [error, setError] = React.useState('');
+
+      const handleAddItem = () => {
+        if (name.trim() === '') {
+          setError('Item name cannot be empty.');
+          return;
+        }
+        if (quantity < 1) {
+          setError('Quantity must be at least 1.');
+          return;
+        }
+        const newItem = { id: Date.now(), name, quantity };
+        setItems(prevItems => [...prevItems, newItem]);
+        setName('');
+        setQuantity(1);
+        setError('');
+      };
+
+      const handleRemoveItem = (id) => {
+        setItems(prevItems => prevItems.filter(item => item.id !== id));
+      };
+
+      const handleClearAll = () => {
+        setItems([]);
+      };
+
+      return (
+        <div className="shopping-container">
+          <h1>Shopping List</h1>
+
+          <input
+            type="text"
+            placeholder="Item name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          /><br/>
+
+          <input
+            type="number"
+            min="1"
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+          /><br/>
+
+          <button onClick={handleAddItem}>Add Item</button>
+          <button onClick={handleClearAll} style={{ backgroundColor: '#6c757d' }}>Clear All</button>
+
+          {error && <div className="error">{error}</div>}
+
+          <div style={{ marginTop: '20px' }}>
+            {items.map(item => (
+              <div key={item.id} className="item">
+                <span>{item.name} - {item.quantity}</span>
+                <button onClick={() => handleRemoveItem(item.id)}>Remove</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      return <ShoppingList />;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+  </script>
+
+</body>
+</html>

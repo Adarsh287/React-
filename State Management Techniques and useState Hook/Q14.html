@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fixed To-Do List</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef2f3;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+      margin: 0;
+    }
+
+    .todo-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      width: 400px;
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 8px 12px;
+      margin-left: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: #f9f9f9;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .task-text {
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+    }
+
+    .delete-btn:hover {
+      background-color: #b52a37;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <!-- React and ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- React code -->
+  <script type="text/babel">
+
+    function TodoList() {
+      const [tasks, setTasks] = React.useState([]);
+      const [input, setInput] = React.useState('');
+
+      const handleAddTask = () => {
+        const trimmedInput = input.trim();
+        if (trimmedInput === '') return;  // Fix 1: Prevent empty task addition
+
+        const newTask = {
+          id: Date.now(), // unique id for each task
+          text: trimmedInput,
+          completed: false,
+        };
+
+        setTasks(prevTasks => [...prevTasks, newTask]);
+        setInput('');
+      };
+
+      const toggleTask = (id) => {
+        setTasks(prevTasks =>
+          prevTasks.map(task =>
+            task.id === id ? { ...task, completed: !task.completed } : task
+          )
+        );
+      };
+
+      const deleteTask = (id) => {
+        setTasks(prevTasks => prevTasks.filter(task => task.id !== id)); // Fix 3: Delete by id, not index
+      };
+
+      return (
+        <div className="todo-container">
+          <h1>To-Do List</h1>
+          <input
+            type="text"
+            placeholder="Enter task..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <button onClick={handleAddTask}>Add Task</button>
+
+          <ul>
+            {tasks.map(task => (
+              <li key={task.id}>
+                <span
+                  className={`task-text ${task.completed ? 'completed' : ''}`}  // Fix 2: Apply strike-through if completed
+                  onClick={() => toggleTask(task.id)}
+                >
+                  {task.text}
+                </span>
+                <button className="delete-btn" onClick={() => deleteTask(task.id)}>Delete</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    function App() {
+      return <TodoList />;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+  </script>
+
+</body>
+</html>
