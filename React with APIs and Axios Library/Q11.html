@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controlled Form - Username</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f2f6;
+      padding: 40px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 350px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+
+    function ControlledForm() {
+      const [username, setUsername] = React.useState('');
+      const [error, setError] = React.useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (username.trim() === '') {
+          setError('Username cannot be empty.');
+        } else {
+          setError('');
+          alert(`Submitted Username: ${username}`);
+          setUsername(''); 
+        }
+      };
+
+      return (
+        <div className="form-container">
+          <h1>Username Form</h1>
+          <form onSubmit={handleSubmit}>
+            <input 
+              type="text" 
+              placeholder="Enter username..." 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <button type="submit">Submit</button>
+          </form>
+          {error && <div className="error">{error}</div>}
+        </div>
+      );
+    }
+
+    function App() {
+      return <ControlledForm />;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+  </script>
+
+</body>
+</html>

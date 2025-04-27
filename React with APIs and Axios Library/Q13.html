@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dynamic Email Form</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f2f6;
+      padding: 40px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 400px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .email-list {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+
+    .email-item {
+      margin-bottom: 10px;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+
+    function DynamicEmailForm() {
+      const [emails, setEmails] = React.useState([]);
+      const [errors, setErrors] = React.useState([]);
+      
+      const handleAddEmail = () => {
+        setEmails([...emails, '']);
+        setErrors([...errors, '']);
+      };
+
+      const handleEmailChange = (index, value) => {
+        const updatedEmails = [...emails];
+        updatedEmails[index] = value;
+        setEmails(updatedEmails);
+        
+        const updatedErrors = [...errors];
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        updatedErrors[index] = emailRegex.test(value) ? '' : 'Invalid email address';
+        setErrors(updatedErrors);
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        alert('Form submitted successfully with emails: ' + emails.join(', '));
+      };
+
+      return (
+        <div className="form-container">
+          <h1>Dynamic Email Form</h1>
+          <form onSubmit={handleSubmit}>
+            {emails.map((email, index) => (
+              <div key={index}>
+                <input 
+                  type="email" 
+                  value={email} 
+                  placeholder="Enter email" 
+                  onChange={(e) => handleEmailChange(index, e.target.value)} 
+                />
+                {errors[index] && <div className="error">{errors[index]}</div>}
+              </div>
+            ))}
+            <button type="button" onClick={handleAddEmail}>Add Email</button>
+            <button type="submit">Submit</button>
+          </form>
+
+          <div className="email-list">
+            <h3>Entered Emails:</h3>
+            <ul>
+              {emails.map((email, index) => (
+                <li key={index} className="email-item">{email}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      return <DynamicEmailForm />;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+  </script>
+
+</body>
+</html>
