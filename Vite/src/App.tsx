@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import { firestore } from './firebase-config'; // Assuming the correct Firebase config is used
+import './App.css'; 
 
 const AppLayout: React.FC = () => {
   return (
@@ -79,12 +78,16 @@ const CounterApp: React.FC = () => {
 };
 
 const TaskList: React.FC = () => {
-  const [tasks, setTasks] = useState<{ name: string; id: string }[]>([]);
+  const [tasks, setTasks] = useState<{ name: string }[]>([]);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      const snapshot = await firestore.collection('tasks').get();
-      setTasks(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+    const fetchTasks = () => {
+      const tasksData = [
+        { name: 'Task 1' },
+        { name: 'Task 2' },
+        { name: 'Task 3' }
+      ];
+      setTasks(tasksData);
     };
     fetchTasks();
   }, []); 
@@ -94,7 +97,7 @@ const TaskList: React.FC = () => {
       <h1>Tasks</h1>
       <ul>
         {tasks.map((task, index) => (
-          <li key={task.id}>{task.name}</li>
+          <li key={index}>{task.name}</li>
         ))}
       </ul>
     </div>
@@ -102,50 +105,44 @@ const TaskList: React.FC = () => {
 };
 
 const TaskManagement: React.FC = () => {
-  const [tasks, setTasks] = useState<{ name: string; id: string }[]>([]);
+  const [tasks, setTasks] = useState<{ name: string }[]>([]);
   const [newTask, setNewTask] = useState<string>('');
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const snapshot = await firestore.collection('tasks').get();
-      setTasks(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
-    };
-    fetchTasks();
-  }, []);
-
-  const addTask = async () => {
+  const addTask = () => {
     if (newTask) {
-      await firestore.collection('tasks').add({ name: newTask });
+      setTasks([...tasks, { name: newTask }]);
       setNewTask('');
     }
   };
 
-  const deleteTask = async (taskId: string) => {
-    await firestore.collection('tasks').doc(taskId).delete();
+  const deleteTask = (taskName: string) => {
+    setTasks(tasks.filter(task => task.name !== taskName));
   };
 
-  const updateTask = async (taskId: string, updatedName: string) => {
-    await firestore.collection('tasks').doc(taskId).update({ name: updatedName });
+  const updateTask = (taskName: string, updatedName: string) => {
+    setTasks(tasks.map(task =>
+      task.name === taskName ? { ...task, name: updatedName } : task
+    ));
   };
 
   return (
     <div>
       <h1>Task Management</h1>
 
-      <input 
-        type="text" 
-        value={newTask} 
-        onChange={(e) => setNewTask(e.target.value)} 
-        placeholder="New Task" 
+      <input
+        type="text"
+        value={newTask}
+        onChange={(e) => setNewTask(e.target.value)}
+        placeholder="New Task"
       />
       <button onClick={addTask}>Add Task</button>
 
       <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
+        {tasks.map((task, index) => (
+          <li key={index}>
             {task.name}
-            <button onClick={() => updateTask(task.id, 'Updated Task')}>Edit</button>
-            <button onClick={() => deleteTask(task.id)}>Delete</button>
+            <button onClick={() => updateTask(task.name, 'Updated Task')}>Edit</button>
+            <button onClick={() => deleteTask(task.name)}>Delete</button>
           </li>
         ))}
       </ul>
